@@ -492,5 +492,205 @@
     return toTex(c, { clamp: true });
   };
 
+  /* ---------- 落樱地毯（树下粉白花瓣铺地） ---------- */
+  T.petalCarpet = function (seed) {
+    const R = rng(seed || 141);
+    const W = 512, H = 512;
+    const c = canvas(W, H), g = c.getContext('2d');
+    g.clearRect(0, 0, W, H);
+    const pinks = [[255, 224, 236], [255, 196, 216], [252, 176, 200], [255, 240, 246], [246, 214, 228]];
+    for (let i = 0; i < 2600; i++) {
+      const a = R() * 6.28;
+      const rad = Math.pow(R(), 0.55) * 240;
+      const x = 256 + Math.cos(a) * rad;
+      const y = 256 + Math.sin(a) * rad;
+      const col = pinks[(R() * pinks.length) | 0];
+      const shade = 0.85 + R() * 0.3;
+      g.fillStyle = 'rgba(' + Math.round(col[0] * shade) + ',' + Math.round(col[1] * shade) + ',' + Math.round(col[2] * shade) + ',' + (0.55 + R() * 0.4).toFixed(2) + ')';
+      g.save();
+      g.translate(x, y);
+      g.rotate(R() * 6.28);
+      g.beginPath();
+      g.ellipse(0, 0, 2.2 + R() * 5.0, 1.2 + R() * 2.6, 0, 0, 6.28);
+      g.fill();
+      g.restore();
+    }
+    // 边缘淡出
+    g.globalCompositeOperation = 'destination-in';
+    const mask = g.createRadialGradient(256, 256, 80, 256, 256, 250);
+    mask.addColorStop(0, 'rgba(0,0,0,1)');
+    mask.addColorStop(0.75, 'rgba(0,0,0,0.85)');
+    mask.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = mask; g.fillRect(0, 0, W, H);
+    g.globalCompositeOperation = 'source-over';
+    return toTex(c, { clamp: true });
+  };
+
+  /* ---------- 高层卷云（薄、长） ---------- */
+  T.cloud2 = function (seed) {
+    const R = rng(seed || 151);
+    const W = 1024, H = 256;
+    const c = canvas(W, H), g = c.getContext('2d');
+    g.clearRect(0, 0, W, H);
+    g.filter = 'blur(4px)';
+    for (let i = 0; i < 60; i++) {
+      const x = 100 + R() * 824;
+      const y = 80 + R() * 100;
+      const rw = 60 + R() * 140;
+      const rh = 4 + R() * 10;
+      const grad = g.createRadialGradient(x, y, 0, x, y, rw);
+      grad.addColorStop(0, 'rgba(255,252,248,' + (0.10 + R() * 0.12).toFixed(2) + ')');
+      grad.addColorStop(1, 'rgba(255,250,244,0)');
+      g.fillStyle = grad;
+      g.beginPath();
+      g.ellipse(x, y, rw, rh, (R() - 0.5) * 0.3, 0, 6.28);
+      g.fill();
+    }
+    g.filter = 'none';
+    g.globalCompositeOperation = 'destination-in';
+    const mask = g.createRadialGradient(512, 128, 120, 512, 128, 510);
+    mask.addColorStop(0, 'rgba(0,0,0,1)');
+    mask.addColorStop(0.8, 'rgba(0,0,0,0.9)');
+    mask.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = mask; g.fillRect(0, 0, W, H);
+    g.globalCompositeOperation = 'source-over';
+    return toTex(c, { clamp: true });
+  };
+
+  /* ---------- 野餐布（粉白格纹） ---------- */
+  T.blanket = function () {
+    const W = 256, H = 256;
+    const c = canvas(W, H), g = c.getContext('2d');
+    const n = 8, cell = W / n;
+    for (let y = 0; y < n; y++) {
+      for (let x = 0; x < n; x++) {
+        g.fillStyle = (x + y) % 2 === 0 ? '#f9e9ee' : '#f3c9d8';
+        g.fillRect(x * cell, y * cell, cell, cell);
+      }
+    }
+    // 细横纹
+    for (let i = 0; i < 260; i++) {
+      g.strokeStyle = 'rgba(255,255,255,0.18)';
+      g.lineWidth = 1;
+      const y = Math.random() * H;
+      g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke();
+    }
+    g.strokeStyle = 'rgba(214,150,172,0.9)';
+    g.lineWidth = 8;
+    g.strokeRect(4, 4, W - 8, H - 8);
+    return toTex(c, { clamp: true });
+  };
+
+  /* ---------- 远山（三层山脊 + 富士山） ---------- */
+  T.mountains = function (seed) {
+    const R = rng(seed || 161);
+    const W = 2048, H = 512;
+    const c = canvas(W, H), g = c.getContext('2d');
+    g.clearRect(0, 0, W, H);
+    // 第三层（最远、最淡）
+    g.fillStyle = 'rgba(186,204,222,0.55)';
+    g.beginPath();
+    g.moveTo(0, H);
+    g.lineTo(0, H - 150);
+    for (let px = 0; px <= W; px += 120) {
+      g.lineTo(px + R() * 60, H - 160 - R() * 120);
+    }
+    g.lineTo(W, H);
+    g.closePath();
+    g.fill();
+    // 富士山
+    const fx = W * 0.5, fb = H - 20, fh = 372, fw = 760;
+    const grad = g.createLinearGradient(0, fb - fh, 0, fb);
+    grad.addColorStop(0, 'rgba(252,253,255,0.99)');
+    grad.addColorStop(0.16, 'rgba(238,244,252,0.98)');
+    grad.addColorStop(0.5, 'rgba(186,206,230,0.97)');
+    grad.addColorStop(0.82, 'rgba(152,178,208,0.95)');
+    grad.addColorStop(1, 'rgba(132,158,190,0.92)');
+    g.fillStyle = grad;
+    g.beginPath();
+    g.moveTo(fx - fw / 2, fb);
+    g.bezierCurveTo(fx - fw * 0.27, fb - fh * 0.5, fx - fw * 0.12, fb - fh * 0.9, fx - fw * 0.045, fb - fh);
+    g.lineTo(fx + fw * 0.045, fb - fh);
+    g.bezierCurveTo(fx + fw * 0.12, fb - fh * 0.9, fx + fw * 0.27, fb - fh * 0.5, fx + fw / 2, fb);
+    g.closePath();
+    g.fill();
+    // 雪顶（平滑雪线 + 雪痕）
+    g.fillStyle = 'rgba(255,255,255,0.92)';
+    g.beginPath();
+    g.moveTo(fx - fw * 0.05, fb - fh);
+    g.lineTo(fx + fw * 0.05, fb - fh);
+    g.lineTo(fx + fw * 0.085, fb - fh * 0.79);
+    g.quadraticCurveTo(fx + fw * 0.05, fb - fh * 0.83, fx + fw * 0.022, fb - fh * 0.795);
+    g.quadraticCurveTo(fx, fb - fh * 0.77, fx - fw * 0.024, fb - fh * 0.795);
+    g.quadraticCurveTo(fx - fw * 0.05, fb - fh * 0.83, fx - fw * 0.085, fb - fh * 0.79);
+    g.closePath();
+    g.fill();
+    g.strokeStyle = 'rgba(255,255,255,0.35)';
+    g.lineWidth = 2.5;
+    for (const s of [-1, 1]) {
+      g.beginPath();
+      g.moveTo(fx + s * fw * 0.06, fb - fh * 0.8);
+      g.quadraticCurveTo(fx + s * fw * 0.1, fb - fh * 0.62, fx + s * fw * 0.15, fb - fh * 0.5);
+      g.stroke();
+    }
+    // 第二层山脊（近一点、深一点）
+    g.fillStyle = 'rgba(158,180,204,0.8)';
+    g.beginPath();
+    g.moveTo(0, H);
+    g.lineTo(0, H - 110);
+    for (let px = 0; px <= W; px += 90) {
+      g.lineTo(px, H - 120 - R() * 110);
+    }
+    g.lineTo(W, H);
+    g.closePath();
+    g.fill();
+    // 山脚雾带
+    const foot = g.createLinearGradient(0, fb - 130, 0, fb + 30);
+    foot.addColorStop(0, 'rgba(246,232,214,0)');
+    foot.addColorStop(0.65, 'rgba(246,232,214,0.35)');
+    foot.addColorStop(1, 'rgba(246,232,214,0.85)');
+    g.fillStyle = foot;
+    g.fillRect(0, fb - 130, W, 160);
+    return toTex(c, { clamp: true });
+  };
+
+  /* ---------- 蝴蝶（小清新点缀） ---------- */
+  T.butterfly = function (seed) {
+    const W = 128, H = 128;
+    const c = canvas(W, H), g = c.getContext('2d');
+    g.clearRect(0, 0, W, H);
+    const wing = (sx) => {
+      const grad = g.createRadialGradient(64 + sx * 22, 58, 2, 64 + sx * 26, 64, 42);
+      grad.addColorStop(0, 'rgba(255,252,236,0.98)');
+      grad.addColorStop(0.6, 'rgba(255,236,200,0.92)');
+      grad.addColorStop(1, 'rgba(240,200,160,0.25)');
+      g.fillStyle = grad;
+      g.beginPath();
+      g.ellipse(64 + sx * 26, 52, 26, 20, sx * 0.5, 0, 6.28);
+      g.fill();
+      g.beginPath();
+      g.ellipse(64 + sx * 20, 84, 18, 15, -sx * 0.4, 0, 6.28);
+      g.fill();
+      // 翅脉
+      g.strokeStyle = 'rgba(180,150,120,0.4)';
+      g.lineWidth = 1;
+      for (let i = 0; i < 3; i++) {
+        g.beginPath();
+        g.moveTo(64 + sx * 6, 66);
+        g.lineTo(64 + sx * (30 + i * 6), 40 + i * 12);
+        g.stroke();
+      }
+    };
+    wing(-1); wing(1);
+    // 身体
+    g.fillStyle = 'rgba(90,70,55,0.95)';
+    g.beginPath(); g.ellipse(64, 68, 3, 20, 0, 0, 6.28); g.fill();
+    g.strokeStyle = 'rgba(90,70,55,0.8)';
+    g.lineWidth = 1.4;
+    g.beginPath(); g.moveTo(64, 48); g.lineTo(58, 34); g.stroke();
+    g.beginPath(); g.moveTo(64, 48); g.lineTo(70, 34); g.stroke();
+    return toTex(c, { clamp: true });
+  };
+
   window.FLOWER_TEX = T;
 })();
