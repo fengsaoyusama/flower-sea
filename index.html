@@ -7,7 +7,7 @@
 <style>
   :root {
     --ink: #fff6ec;
-    --ink-dim: rgba(255, 246, 236, 0.7);
+    --ink-dim: rgba(255, 246, 236, 0.72);
     --pink: #ffc4d8;
     --panel: rgba(46, 32, 42, 0.34);
     --line: rgba(255, 255, 255, 0.22);
@@ -19,24 +19,23 @@
     font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
     -webkit-user-select: none; user-select: none;
   }
-  #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
-  #scene:active { cursor: grabbing; }
+  #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
 
   #hud { position: fixed; inset: 0; pointer-events: none; }
   #brand {
     position: absolute; left: 26px; top: 22px;
     letter-spacing: 0.3em; font-size: 13px; font-weight: 600;
     color: rgba(255, 250, 242, 0.95);
-    text-shadow: 0 1px 12px rgba(120, 70, 70, 0.45);
+    text-shadow: 0 1px 12px rgba(70, 40, 40, 0.45);
   }
   #brand small {
     display: block; margin-top: 7px; letter-spacing: 0.14em;
-    font-size: 10px; font-weight: 400; color: rgba(255, 250, 242, 0.62);
+    font-size: 10px; font-weight: 400; color: rgba(255, 250, 242, 0.66);
   }
   #hint {
     position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%);
-    font-size: 12px; color: rgba(255, 250, 242, 0.75); letter-spacing: 0.08em;
-    text-shadow: 0 1px 8px rgba(80, 40, 40, 0.7); white-space: nowrap;
+    font-size: 12px; color: rgba(255, 250, 242, 0.78); letter-spacing: 0.08em;
+    text-shadow: 0 1px 8px rgba(70, 40, 40, 0.7); white-space: nowrap;
   }
   #bar {
     position: absolute; left: 50%; bottom: 34px; transform: translateX(-50%);
@@ -45,7 +44,7 @@
     border: 1px solid var(--line); border-radius: 999px;
     backdrop-filter: blur(16px) saturate(1.15);
     -webkit-backdrop-filter: blur(16px) saturate(1.15);
-    box-shadow: 0 6px 30px rgba(80, 40, 40, 0.28);
+    box-shadow: 0 6px 30px rgba(70, 40, 40, 0.28);
     pointer-events: auto;
   }
   #bar button {
@@ -103,21 +102,20 @@
   <canvas id="scene"></canvas>
 
   <div id="hud">
-    <div id="brand">HANAMI no OKA<small>花見の丘 · three.js 全程序化 · 无外部素材</small></div>
-    <div id="hint"></div>
+    <div id="brand">HANAMI no OKA<small>花見の丘 · 固定镜头 · 昼与夜 · 全程序化</small></div>
+    <div id="hint">点击下方切换「时段 / 天气 / 风」</div>
     <div id="bar">
-      <button data-mode="auto" title="电影感自动运镜"><span class="dot"></span>自动</button>
-      <button data-mode="free" title="自由漫游：拖动鼠标 + WASD">漫游</button>
-      <span class="sep"></span>
+      <button data-act="time">时段 <em id="timeLabel">正午</em></button>
+      <button data-act="weather">天气 <em id="weatherLabel">晴</em></button>
       <button data-act="wind">风 <em id="windLabel">轻风</em></button>
-      <button data-act="cam">机位 <em id="camLabel">远望</em></button>
+      <button data-act="auto">循环 <em id="autoLabel">关</em></button>
       <span class="sep"></span>
       <button data-act="shot">截图</button>
       <button data-act="fullscreen">全屏</button>
     </div>
   </div>
 
-  <div id="loading"><div class="ring"></div><p>正在种下这片花海</p></div>
+  <div id="loading"><div class="ring"></div><p>正在布置这片花海</p></div>
   <pre id="err"></pre>
 
   <script src="./vendor/three.min.js"></script>
